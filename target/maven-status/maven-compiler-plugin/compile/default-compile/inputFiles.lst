@@ -1,0 +1,16 @@
+G:\JW\workspace\crud\src\main\java\crud\javacode\controller\CustomerController.java
+G:\JW\workspace\crud\src\main\java\crud\javacode\configJPA\JpaAuditingConfig.java
+G:\JW\workspace\crud\src\main\java\crud\javacode\service\CustomerServiceImpl.java
+G:\JW\workspace\crud\src\main\java\crud\javacode\repository\CustomerRepository.java
+G:\JW\workspace\crud\src\main\java\crud\javacode\dto\AbstractDTO.java
+G:\JW\workspace\crud\src\main\java\dto\NewCustomer.java
+G:\JW\workspace\crud\src\main\java\crud\javacode\entity\RoleEntity.java
+G:\JW\workspace\crud\src\main\java\crud\javacode\service\CustomerService.java
+G:\JW\workspace\crud\src\main\java\crud\javacode\dto\CustomerDTO.java
+G:\JW\workspace\crud\src\main\java\crud\javacode\convert\CustomerConverter.java
+G:\JW\workspace\crud\src\main\java\crud\javacode\entity\CustomerEntity.java
+G:\JW\workspace\crud\src\main\java\crud\javacode\entity\BaseEntity.java
+G:\JW\workspace\crud\src\main\java\crud\javacode\configJPA\WebSecurityConfig.java
+G:\JW\workspace\crud\src\main\java\crud\javacode\controller\MainController.java
+G:\JW\workspace\crud\src\main\java\dto\AbstractDTO.java
+G:\JW\workspace\crud\src\main\java\crud\javacode\configJPA\JPAConfig.java
