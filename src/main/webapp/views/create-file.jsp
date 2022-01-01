@@ -30,21 +30,38 @@
      style="border: 1px rgb(221, 218, 218) solid; border-radius: 5px; width: 50%; margin: 0 auto; padding: 20px;">
 
     <div class="row">
-        <div class="col-sm-4" data-toggle="modal" data-target="#myModal">
-            <button class="btn"><i class="glyphicon glyphicon-cog"></i> Setting</button>
-        </div>
-        <div class="col-sm-7">
-            <form action="" method="post" enctype="multipart/form-data">
-                <div class="row">
-                    <div class="col-sm-10">
-                        <input type="file" class="form-control" name="filecv" placeholder="Enter photo">
+        <%--        <div class="col-sm-1" data-toggle="modal" data-target="#myModal">--%>
+        <%--            <button class="btn" ><i class="glyphicon glyphicon-cog"></i></button>--%>
+        <%--        </div>--%>
+        <div class="col-sm-9">
+            <form:form action="/fileCtrl/upload" method="post" enctype="multipart/form-data">
+                <div class="row" style="margin-bottom: 20px;">
+                    <div class="col-md-5">
+                        <label for="sel1">File type:</label>
+                        <select class="form-control" id="type">
+                            <option value="1">Image</option>
+                            <option value="2">Word</option>
+                            <option value="3">Excel</option>
+                            <option value="4">Pdf</option>
+                        </select>
                     </div>
-                    <div class="col-sm-1">
-                        <button type="submit" class="btn btn-primary">Upload</button>
+                    <div class="col-md-5">
+                        <label for="sel1">Select File</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" type="file" id="file" path="file"/>
+                        </div>
                     </div>
-
+                    <div style="">
+                        <div style="margin-top: -40px;margin-bottom: 10px;margin-right:-33%;float: right;">
+                            <button class="btn" data-toggle="modal" data-target="#myModal"><i
+                                    class="glyphicon glyphicon-cog"></i></button>
+                        </div>
+                        <div style="    margin-top: 25px;">
+                            <button type="submit" class="btn btn-primary">Upload</button>
+                        </div>
+                    </div>
                 </div>
-            </form>
+            </form:form>
         </div>
     </div>
 
@@ -105,7 +122,7 @@
 
                 <!-- Modal Header -->
                 <div class="modal-header">
-                    <h4 class="modal-title" style="text-align: center;s">Setting</h4>
+                    <h4 class="modal-title" style="text-align: center;">Setting</h4>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
 
