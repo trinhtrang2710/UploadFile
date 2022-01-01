@@ -1,4 +1,4 @@
-package crud.javacode.configJPA;
+package crud.javacode.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
