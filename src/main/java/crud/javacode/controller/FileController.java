@@ -41,7 +41,6 @@ public class FileController {
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     public String uploadFile(UploadFileRequest myFile, Model model) {
         model.addAttribute("message", "upload success");
-        model.addAttribute("type", myFile.getDescription());
 
         try {
             MultipartFile multipartFile = myFile.getMultipartFile();
