@@ -1,10 +1,12 @@
 package crud.javacode.model.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 @Table(name = "setting")
-public class SettingEntity {
+public class SettingEntity implements Serializable {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -20,7 +22,7 @@ public class SettingEntity {
     private String mimeTypeAllowed;
 
     @Column(name = "lastUpdatedTime")
-    private String lastUpdatedTime;
+    private Date lastUpdatedTime;
 
     public Long getId() {
         return id;
@@ -54,11 +56,11 @@ public class SettingEntity {
         this.mimeTypeAllowed = mimeTypeAllowed;
     }
 
-    public String getLastUpdatedTime() {
+    public Date getLastUpdatedTime() {
         return lastUpdatedTime;
     }
 
-    public void setLastUpdatedTime(String lastUpdatedTime) {
+    public void setLastUpdatedTime(Date lastUpdatedTime) {
         this.lastUpdatedTime = lastUpdatedTime;
     }
 }

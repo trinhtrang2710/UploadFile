@@ -41,15 +41,6 @@
                     <label>Select File</label>
                     <input type="file" name="multipartFile"/>
                 </div>
-                <div class="col-md-5">
-                    <label for="sel1">File type:</label>
-                    <select class="form-control" id="type" path="description">
-                        <option value="1">Image</option>
-                        <option value="2">Word</option>
-                        <option value="3">Excel</option>
-                        <option value="4">Pdf</option>
-                    </select>
-                </div>
                 <input type="submit" value="Submit"/>
             </form:form>
         </div>

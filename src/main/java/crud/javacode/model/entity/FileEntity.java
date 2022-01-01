@@ -2,6 +2,7 @@ package crud.javacode.model.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 @Table(name = "file")
@@ -21,7 +22,7 @@ public class FileEntity implements Serializable {
     private int fileSize;
 
     @Column(name = "mime")
-    private String mime;
+    private String mime;//kieu file
 
     @Column(name = "numberOfDownload")
     private int numberOfDownload;
@@ -33,7 +34,7 @@ public class FileEntity implements Serializable {
     private String status;
 
     @Column(name = "createdDateTime")
-    private String createdDateTime;
+    private Date createdDateTime;
 
     @Column(name = "versionIds")
     private String versionIds;
@@ -102,11 +103,11 @@ public class FileEntity implements Serializable {
         this.status = status;
     }
 
-    public String getCreatedDateTime() {
+    public Date getCreatedDateTime() {
         return createdDateTime;
     }
 
-    public void setCreatedDateTime(String createdDateTime) {
+    public void setCreatedDateTime(Date createdDateTime) {
         this.createdDateTime = createdDateTime;
     }
 
