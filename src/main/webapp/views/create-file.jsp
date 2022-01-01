@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <html>
 
 <head>
@@ -34,37 +35,25 @@
         <%--            <button class="btn" ><i class="glyphicon glyphicon-cog"></i></button>--%>
         <%--        </div>--%>
         <div class="col-sm-9">
-            <form:form action="/fileCtrl/upload" method="post" enctype="multipart/form-data">
-                <div class="row" style="margin-bottom: 20px;">
-                    <div class="col-md-5">
-                        <label for="sel1">File type:</label>
-                        <select class="form-control" id="type">
-                            <option value="1">Image</option>
-                            <option value="2">Word</option>
-                            <option value="3">Excel</option>
-                            <option value="4">Pdf</option>
-                        </select>
-                    </div>
-                    <div class="col-md-5">
-                        <label for="sel1">Select File</label>
-                        <div class="col-sm-10">
-                            <input class="form-control" type="file" id="file" path="file"/>
-                        </div>
-                    </div>
-                    <div style="">
-                        <div style="margin-top: -40px;margin-bottom: 10px;margin-right:-33%;float: right;">
-                            <button class="btn" data-toggle="modal" data-target="#myModal"><i
-                                    class="glyphicon glyphicon-cog"></i></button>
-                        </div>
-                        <div style="    margin-top: 25px;">
-                            <button type="submit" class="btn btn-primary">Upload</button>
-                        </div>
-                    </div>
+            <form:form id="formUploadFile" method="POST" action="upload" enctype="multipart/form-data"
+                       modelAttribute="myFile">
+                <div class="col-md-5">
+                    <label>Select File</label>
+                    <input type="file" name="multipartFile"/>
                 </div>
+                <div class="col-md-5">
+                    <label for="sel1">File type:</label>
+                    <select class="form-control" id="type" path="description">
+                        <option value="1">Image</option>
+                        <option value="2">Word</option>
+                        <option value="3">Excel</option>
+                        <option value="4">Pdf</option>
+                    </select>
+                </div>
+                <input type="submit" value="Submit"/>
             </form:form>
         </div>
     </div>
-
 
 
     <div class="table-responsive pt-3">

@@ -1,12 +1,10 @@
 package crud.javacode.repository;
 
-import crud.javacode.dto.CustomerDTO;
-import crud.javacode.entity.CustomerEntity;
+import crud.javacode.model.entity.CustomerEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 

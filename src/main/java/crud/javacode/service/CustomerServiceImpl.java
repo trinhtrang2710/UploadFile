@@ -3,7 +3,7 @@ package crud.javacode.service;
 import crud.javacode.convert.CustomerConverter;
 import crud.javacode.repository.CustomerRepository;
 import crud.javacode.dto.CustomerDTO;
-import crud.javacode.entity.CustomerEntity;
+import crud.javacode.model.entity.CustomerEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

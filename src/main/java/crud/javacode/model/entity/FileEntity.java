@@ -1,10 +1,11 @@
-package crud.javacode.entity;
+package crud.javacode.model.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "file")
-public class FileEntity {
+public class FileEntity implements Serializable {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)

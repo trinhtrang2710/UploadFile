@@ -1,10 +1,11 @@
-package crud.javacode.entity;
+package crud.javacode.model.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "customer")
-public class CustomerEntity {
+public class CustomerEntity implements Serializable {
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.AUTO)

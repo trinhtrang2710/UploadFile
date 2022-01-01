@@ -1,4 +1,4 @@
-package crud.javacode.entity;
+package crud.javacode.model.entity;
 
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedDate;

@@ -1,7 +1,7 @@
 package crud.javacode.convert;
 
 import crud.javacode.dto.CustomerDTO;
-import crud.javacode.entity.CustomerEntity;
+import crud.javacode.model.entity.CustomerEntity;
 import org.springframework.stereotype.Component;
 
 @Component

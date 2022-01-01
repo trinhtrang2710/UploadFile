@@ -1,4 +1,4 @@
-package crud.javacode.entity;
+package crud.javacode.model.entity;
 
 import javax.persistence.*;
 
