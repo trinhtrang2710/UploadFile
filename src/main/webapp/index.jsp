@@ -11,7 +11,7 @@
 <div align="center">
     <h1>Spring Security </h1>
     <a href="/home">Go to Administrator Page</a>
-    <a href="/fileCtrl/file">Go to Management File</a>
+    <a href="/file">Go to Management File</a>
 </div>
 </body>
 </html>
