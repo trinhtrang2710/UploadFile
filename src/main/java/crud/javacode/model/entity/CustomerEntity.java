@@ -7,8 +7,8 @@ import java.io.Serializable;
 @Table(name = "customer")
 public class CustomerEntity implements Serializable {
 	@Id
-	@Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "ID", unique = true, nullable = false)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	@Column(name = "name")

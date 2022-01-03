@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <html>
 
 <head>
@@ -65,35 +66,36 @@
             </tr>
             </thead>
             <tbody>
-            <!-- <%-- c:forEach => basic iteration tag --%>
-            <%--                    <c:forEach var="users" items="${userList}">--%> -->
+            <c:forEach var="item" items="${files}" varStatus="loop">
             <tr>
                 <!-- <%-- c:out => for expressions --%> -->
                 <td>
-                    <c:out value="" />1
+                    <c:out value=""/>${loop.index+1}
                 </td>
                 <td>
-                    <c:out value="" />HI
+                    <c:out value=""/>${item.name}
                 </td>
                 <td>
-                    <c:out value="" />1
+                    <c:out value=""/>${item.version}
                 </td>
                 <td>
-                    <c:out value="" />30kb
+                    <c:out value=""/>${item.fileSize}
                 </td>
                 <td>
-                    <c:out value="" />20/12/2021
+                    <c:out value=""/>${item.createdDateTime}
                 </td>
                 <td>
-                    <c:out value="" />1
+                    <c:out value=""/>${item.numberOfDownload}
                 </td>
                 <td>
-                    <button class="btn" style="background-color: white"><i
-                            class="glyphicon glyphicon-download-alt"></i></button>
-                    <button class="btn" style="background-color: rgb(189, 17, 17)"><i
-                            class="glyphicon glyphicon-trash" style="color: white;"></i></button>
+                    <a class="btn" style="background-color: white" href="/download?id=${item.id}">
+                        <i class="glyphicon glyphicon-download-alt"></i>
+                    </a>
+                    <a class="btn" style="background-color: rgb(189, 17, 17)" href="/delete?id=${item.id}">
+                        <i class="glyphicon glyphicon-trash" style="color: white;"></i>
+                    </a>
                 </td>
-                <!-- <%--                        </c:forEach>--%> -->
+                </c:forEach>
             </tbody>
 
         </table>
@@ -112,29 +114,28 @@
 
                 <!-- Modal body -->
                 <div class="modal-body">
-                    <form:form id="formUpdateSetting" method="POST" action="/setting/update"
-                               modelAttribute="setting">
+                    <form:form action="setting/update" method="POST" modelAttribute="settingg">
                         <div class="form-group">
                             <label for="usr">Max file size (MB)</label>
-                            <input type="number" class="form-control" id="usr" name="maxFileSize">
+                            <input type="number" class="form-control" id="usr" name="maxFileSize" path="maxFileSize">
                         </div>
                         <div class="form-group">
                             <label for="pwd">Item per page</label>
-                            <input type="text" class="form-control" id="pwd" name="itemPerPage">
+                            <input type="text" class="form-control" id="pwd" name="itemPerPage" path="itemPerPage">
                         </div>
 
                         <label for="sel1">Allowed upload type</label>
-                        <select class="form-control" id="sel1" name="mimeType">
-                            <option>Image</option>
-                            <option>Word</option>
-                            <option>Excel</option>
-                            <option>Pdf</option>
+                        <select class="form-control" id="sel1" name="mimeType" path="mimeType">
+                            <option value="image">Image</option>
+                            <option value="word">Word</option>
+                            <option value="excel">Excel</option>
+                            <option value="pdf">Pdf</option>
                         </select>
                         <br>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-default" style="background-color: green; color: white;"
-                                    data-dismiss="modal">Save
-                            </button>
+                            <input type="submit" class="btn btn-default" style="background-color: green; color: white;"
+                                   data-dismiss="modal">
+                            </input>
                         </div>
                     </form:form>
                 </div>
@@ -148,7 +149,7 @@
             </div>
         </div>
     </div>
-
+</div>
 </body>
 
 </html>

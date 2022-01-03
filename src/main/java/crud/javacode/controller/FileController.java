@@ -1,22 +1,28 @@
 package crud.javacode.controller;
 
 import crud.javacode.common.UtilsString;
-import crud.javacode.dto.CustomerDTO;
 import crud.javacode.model.dto.request.UpdateSettingRequest;
 import crud.javacode.model.dto.request.UploadFileRequest;
 import crud.javacode.model.entity.FileEntity;
 import crud.javacode.model.entity.SettingEntity;
 import crud.javacode.repository.FileRepository;
 import crud.javacode.repository.SettingRepository;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.io.File;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -32,10 +38,10 @@ public class FileController {
 
     @RequestMapping(value = "/file", method = RequestMethod.GET)
     public ModelAndView homePage() {
-        CustomerDTO customerDTO = new CustomerDTO();
+        List<FileEntity> fileEntity = new ArrayList<>();
         ModelAndView mav = new ModelAndView("create-file");
-//        customerDTO.setListResult(customerService.getCustomers());
-//        mav.addObject("customerDTO", customerDTO);
+        fileEntity = (fileRepository.findAll());
+        mav.addObject("files", fileEntity);
         return mav;
     }
 
@@ -45,26 +51,31 @@ public class FileController {
         try {
             Long size = myFile.getMultipartFile().getSize();
 
+            if (size == 0) {
+                model.addAttribute("message", "File invalid");
+                return "redirect: /file";
+            }
             List<SettingEntity> settings = settingRepository.findAll();
             SettingEntity settingNow = null;
             if (settings != null && settings.size() > 0) {
                 settingNow = settings.get(0);
             }
 
-            if (myFile.getMultipartFile().getSize() >= (size != null ? size.intValue() : 0)) {
-                model.addAttribute("message", "Over size!");
-                return "create-file";
+            if (settingNow != null) {
+                if ((size.intValue()) > settingNow.getMaxFileSize()) {
+                    model.addAttribute("message", "Over size!");
+                    return "redirect: /file";
+                }
             }
 
             MultipartFile multipartFile = myFile.getMultipartFile();
-            String fileName = multipartFile.getOriginalFilename();
+            String fileName = String.format("%s_%s", new Date().getTime(), multipartFile.getOriginalFilename());
             File file = new File(UtilsString.pathFileUpload, fileName);
             multipartFile.transferTo(file);
 
             FileEntity fileEntity = fileRepository.findByName(fileName);
-            int version = fileEntity.getVersion();
 
-            if (file == null) {
+            if (fileEntity == null) {
                 fileEntity = new FileEntity();
                 fileEntity.setFileSize(size != null ? size.intValue() : 0);
                 fileEntity.setCreatedDateTime(new Date());
@@ -76,6 +87,8 @@ public class FileController {
 
                 fileEntity = fileRepository.save(fileEntity);
             } else {
+                int version = fileEntity.getVersion();
+                fileEntity = new FileEntity();
                 fileEntity.setFileSize(size != null ? size.intValue() : 0);
                 fileEntity.setCreatedDateTime(new Date());
                 fileEntity.setName(fileName);
@@ -93,12 +106,59 @@ public class FileController {
             e.printStackTrace();
             model.addAttribute("message", "Upload failed!");
         }
-        return "create-file";
+        return "redirect: /file";
     }
 
+    @RequestMapping(value = "/download", method = RequestMethod.GET)
+    public String download(@RequestParam("id") Long id, HttpServletResponse response) throws IOException {
+        if (id == null) {
+            return "redirect: /file";
+        }
+        try {
+            FileEntity fileEntity = fileRepository.findById(id);
+            if (fileEntity == null) {
+                return "redirect: /file";
+            }
+            fileEntity.setNumberOfDownload(fileEntity.getNumberOfDownload() + 1);
+            fileRepository.save(fileEntity);
+
+            File file = new File(fileEntity.getPath());
+            byte[] data = FileUtils.readFileToByteArray(file);
+            // Thiết lập thông tin trả về
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-disposition", "attachment; filename=" + file.getName());
+            response.setContentLength(data.length);
+            InputStream inputStream = new BufferedInputStream(new ByteArrayInputStream(data));
+            FileCopyUtils.copy(inputStream, response.getOutputStream());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return "redirect: /file";
+    }
+
+    @RequestMapping(value = "/delete", method = RequestMethod.GET)
+    public String delete(@RequestParam("id") Long id, HttpServletResponse response) throws IOException {
+        if (id == null) {
+            return "redirect: /file";
+        }
+        try {
+            FileEntity fileEntity = fileRepository.findById(id);
+            if (fileEntity == null) {
+                return "redirect: /file";
+            }
+
+            File file = new File(fileEntity.getPath());
+            file.delete();
+            fileRepository.delete(fileEntity);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return "redirect: /file";
+    }
 
     @RequestMapping(value = "/setting/update", method = RequestMethod.POST)
-    public void updateSetting(UpdateSettingRequest setting, Model model) {
+    public void updateSetting(@ModelAttribute("settingg") UpdateSettingRequest setting, Model model, BindingResult result) {
         if (setting == null) {
             model.addAttribute("message", "param null!!");
             return;
