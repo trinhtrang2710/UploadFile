@@ -1,7 +1,7 @@
 package crud.javacode.common;
 
 public class UtilsString {
-    public static String pathFileUpload = "D:/upload/";
+    public static String pathFileUpload = "G:/upload/";
 
     public static class FileTail {
         public static String WORD_1 = "DOC";

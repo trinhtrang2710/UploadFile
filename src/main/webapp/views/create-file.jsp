@@ -52,14 +52,14 @@
     </div>
 
 
-    <div class="table-responsive pt-3">
+    <div class="table-responsive">
         <table class="table table-hover">
             <thead>
             <tr>
                 <th>Index</th>
                 <th>File Name</th>
                 <th>Version</th>
-                <th>File size</th>
+                <th>File size (Kb)</th>
                 <th>Created Time</th>
                 <th>Download</th>
                 <th>Action</th>
