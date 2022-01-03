@@ -30,6 +30,9 @@
 <h2 style="text-align: center;">Files Managment</h2>
 <div class="container"
      style="border: 1px rgb(221, 218, 218) solid; border-radius: 5px; width: 50%; margin: 0 auto; padding: 20px;">
+    <div class="alert alert-success">
+        <strong>${message}</strong>
+    </div>
 
     <div class="row">
         <div class="col-sm-12">
