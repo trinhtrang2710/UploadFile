@@ -88,11 +88,20 @@ public class FileController {
                 }
             }
 
-            String fileName = String.format("%s_%s", new Date().getTime(), multipartFile.getOriginalFilename());
+            String fileName = multipartFile.getOriginalFilename();
+
+            List<FileEntity> fileEntitys = fileRepository.findAll();
+            FileEntity fileEntity = null;
+            for (FileEntity file : fileEntitys) {
+                String name = file.getName().replace(String.format("%s_", file.getName().split("_")[0]), "");
+                if (fileName.trim().equalsIgnoreCase(name)) {
+                    fileEntity = file;
+                }
+            }
+
+            fileName = String.format("%s_%s", new Date().getTime(), multipartFile.getOriginalFilename());
             File file = new File(UtilsString.pathFileUpload, fileName);
             multipartFile.transferTo(file);
-
-            FileEntity fileEntity = fileRepository.findByName(fileName);
 
             if (fileEntity == null) {
                 fileEntity = new FileEntity();
