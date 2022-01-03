@@ -18,8 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.support.DefaultMultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.ArrayList;
@@ -46,88 +48,95 @@ public class FileController {
     }
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public String uploadFile(UploadFileRequest myFile, Model model) {
+    public String uploadFile(UploadFileRequest myFile, Model model, HttpServletRequest request) {
+//        UploadFileRequest để làm cảnh, k lấy file từ nó. Lấy file theo dòng 55
 //        Check param
-        if (myFile == null) {
-            model.addAttribute("message", "Bad request");
-            return "redirect: /file";
-        }
-        if (myFile.getMultipartFile() == null) {
-            model.addAttribute("message", "File invalid");
-            return "redirect: /file";
-        }
         try {
-//            get file
-            MultipartFile multipartFile = myFile.getMultipartFile();
-            Long size = multipartFile.getSize();
-
-            if (size == 0) {
+            List<MultipartFile> files = ((DefaultMultipartHttpServletRequest) request)
+                    .getFiles("multipartFile");
+            if (files == null || files.size() <= 0) {
                 model.addAttribute("message", "File invalid");
                 return "redirect: /file";
             }
-//            tim tat ca setting
-            List<SettingEntity> settings = settingRepository.findAll();
-            SettingEntity settingNow = null;
-            if (settings != null && settings.size() > 0) {
-//                lay setting moi nhat
-                settingNow = settings.get(0);
-            }
+//            Mảng này chứa những file thêm thành công
+            List<FileEntity> fileAddSuccess = new ArrayList<>();
 
-            if (settingNow != null) {
-                //                kiem tra dung luong file
-                if ((size.intValue()) > (settingNow.getMaxFileSize() * 1024 * 1024)) {
-                    model.addAttribute("message", "Over size!");
-                    return "redirect: /file";
-                }
+            for (MultipartFile multipartFile : files) {
+
+                try {
+                    Long size = multipartFile.getSize();
+
+                    if (size == 0) {
+                        model.addAttribute("message", "File invalid");
+                        return "redirect: /file";
+                    }
+//            tim tat ca setting
+                    List<SettingEntity> settings = settingRepository.findAll();
+                    SettingEntity settingNow = null;
+                    if (settings != null && settings.size() > 0) {
+//                lay setting moi nhat
+                        settingNow = settings.get(0);
+                    }
+
+                    if (settingNow != null) {
+                        //                kiem tra dung luong file
+                        if ((size.intValue()) > (settingNow.getMaxFileSize() * 1024 * 1024)) {
+                            model.addAttribute("message", "Over size!");
+                            return "redirect: /file";
+                        }
 
 //                Kiem tra kieu file
-                String filenameOrigin = multipartFile.getOriginalFilename();
-                if (!UtilsString.FileTail.checkFile(settingNow.getMimeTypeAllowed(), filenameOrigin.split(".")[1])) {
-                    model.addAttribute("message", "Not same setting");
-                    return "redirect: /file";
+                        String filenameOrigin = multipartFile.getOriginalFilename();
+                        if (!UtilsString.FileTail.checkFile(settingNow.getMimeTypeAllowed(), filenameOrigin.split(".")[1])) {
+                            model.addAttribute("message", "Not same setting");
+                            return "redirect: /file";
+                        }
+                    }
+
+                    String fileName = multipartFile.getOriginalFilename();
+
+                    List<FileEntity> fileEntitys = fileRepository.findAll();
+                    FileEntity fileEntity = null;
+                    for (FileEntity file : fileEntitys) {
+                        String name = file.getName().replace(String.format("%s_", file.getName().split("_")[0]), "");
+                        if (fileName.trim().equalsIgnoreCase(name)) {
+                            fileEntity = file;
+                        }
+                    }
+
+                    fileName = String.format("%s_%s", new Date().getTime(), multipartFile.getOriginalFilename());
+                    File file = new File(UtilsString.pathFileUpload, fileName);
+                    multipartFile.transferTo(file);
+
+                    if (fileEntity == null) {
+                        fileEntity = new FileEntity();
+                        fileEntity.setFileSize(size != null ? size.intValue() : 0);
+                        fileEntity.setCreatedDateTime(new Date());
+                        fileEntity.setName(fileName);
+                        fileEntity.setPath(String.format("%s%s", UtilsString.pathFileUpload, fileName));
+                        fileEntity.setNumberOfDownload(0);
+                        fileEntity.setVersion(0);
+                        fileEntity.setStatus("Tồn tại");
+
+                        fileEntity = fileRepository.save(fileEntity);
+                    } else {
+                        int version = fileEntity.getVersion();
+                        fileEntity = new FileEntity();
+                        fileEntity.setFileSize(size != null ? size.intValue() : 0);
+                        fileEntity.setCreatedDateTime(new Date());
+                        fileEntity.setName(fileName);
+                        fileEntity.setPath(String.format("%s%s", UtilsString.pathFileUpload, fileName));
+                        fileEntity.setNumberOfDownload(0);
+                        fileEntity.setVersion(version + 1);
+                        fileEntity.setStatus("Tồn tại");
+                        fileEntity = fileRepository.save(fileEntity);
+                    }
+                    fileAddSuccess.add(fileEntity);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
-
-            String fileName = multipartFile.getOriginalFilename();
-
-            List<FileEntity> fileEntitys = fileRepository.findAll();
-            FileEntity fileEntity = null;
-            for (FileEntity file : fileEntitys) {
-                String name = file.getName().replace(String.format("%s_", file.getName().split("_")[0]), "");
-                if (fileName.trim().equalsIgnoreCase(name)) {
-                    fileEntity = file;
-                }
-            }
-
-            fileName = String.format("%s_%s", new Date().getTime(), multipartFile.getOriginalFilename());
-            File file = new File(UtilsString.pathFileUpload, fileName);
-            multipartFile.transferTo(file);
-
-            if (fileEntity == null) {
-                fileEntity = new FileEntity();
-                fileEntity.setFileSize(size != null ? size.intValue() : 0);
-                fileEntity.setCreatedDateTime(new Date());
-                fileEntity.setName(fileName);
-                fileEntity.setPath(String.format("%s%s", UtilsString.pathFileUpload, fileName));
-                fileEntity.setNumberOfDownload(0);
-                fileEntity.setVersion(0);
-                fileEntity.setStatus("Tồn tại");
-
-                fileEntity = fileRepository.save(fileEntity);
-            } else {
-                int version = fileEntity.getVersion();
-                fileEntity = new FileEntity();
-                fileEntity.setFileSize(size != null ? size.intValue() : 0);
-                fileEntity.setCreatedDateTime(new Date());
-                fileEntity.setName(fileName);
-                fileEntity.setPath(String.format("%s%s", UtilsString.pathFileUpload, fileName));
-                fileEntity.setNumberOfDownload(0);
-                fileEntity.setVersion(version + 1);
-                fileEntity.setStatus("Tồn tại");
-                fileEntity = fileRepository.save(fileEntity);
-
-            }
-            model.addAttribute("ObjectInfo", fileEntity);
+            model.addAttribute("fileAddSuccess", fileAddSuccess);
             model.addAttribute("message", "Upload success!");
 
         } catch (Exception e) {

@@ -46,7 +46,7 @@
                 <div style="margin-bottom:10px;">
                     <div class="col-md-5">
                         <label>Select File</label>
-                        <input type="file" name="multipartFile"/>
+                        <input type="file" name="multipartFile" multiple/>
                     </div>
                     <input style="margin-top:20px;" type="submit" value="Submit"/>
                 </div>
