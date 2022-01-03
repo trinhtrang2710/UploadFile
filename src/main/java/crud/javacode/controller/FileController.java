@@ -47,28 +47,47 @@ public class FileController {
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     public String uploadFile(UploadFileRequest myFile, Model model) {
-
+//        Check param
+        if (myFile == null) {
+            model.addAttribute("message", "Bad request");
+            return "redirect: /file";
+        }
+        if (myFile.getMultipartFile() == null) {
+            model.addAttribute("message", "File invalid");
+            return "redirect: /file";
+        }
         try {
-            Long size = myFile.getMultipartFile().getSize();
+//            get file
+            MultipartFile multipartFile = myFile.getMultipartFile();
+            Long size = multipartFile.getSize();
 
             if (size == 0) {
                 model.addAttribute("message", "File invalid");
                 return "redirect: /file";
             }
+//            tim tat ca setting
             List<SettingEntity> settings = settingRepository.findAll();
             SettingEntity settingNow = null;
             if (settings != null && settings.size() > 0) {
+//                lay setting moi nhat
                 settingNow = settings.get(0);
             }
 
             if (settingNow != null) {
-                if ((size.intValue()) > settingNow.getMaxFileSize()) {
+                //                kiem tra dung luong file
+                if ((size.intValue()) > (settingNow.getMaxFileSize() * 1024 * 1024)) {
                     model.addAttribute("message", "Over size!");
+                    return "redirect: /file";
+                }
+
+//                Kiem tra kieu file
+                String filenameOrigin = multipartFile.getOriginalFilename();
+                if (!UtilsString.FileTail.checkFile(settingNow.getMimeTypeAllowed(), filenameOrigin.split(".")[1])) {
+                    model.addAttribute("message", "Not same setting");
                     return "redirect: /file";
                 }
             }
 
-            MultipartFile multipartFile = myFile.getMultipartFile();
             String fileName = String.format("%s_%s", new Date().getTime(), multipartFile.getOriginalFilename());
             File file = new File(UtilsString.pathFileUpload, fileName);
             multipartFile.transferTo(file);
