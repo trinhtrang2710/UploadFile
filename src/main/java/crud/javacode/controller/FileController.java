@@ -2,6 +2,7 @@ package crud.javacode.controller;
 
 import crud.javacode.common.UtilsString;
 import crud.javacode.dto.CustomerDTO;
+import crud.javacode.model.dto.request.UpdateSettingRequest;
 import crud.javacode.model.dto.request.UploadFileRequest;
 import crud.javacode.model.entity.FileEntity;
 import crud.javacode.model.entity.SettingEntity;
@@ -40,13 +41,9 @@ public class FileController {
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     public String uploadFile(UploadFileRequest myFile, Model model) {
-        model.addAttribute("message", "upload success");
 
         try {
-            MultipartFile multipartFile = myFile.getMultipartFile();
-            String fileName = multipartFile.getOriginalFilename();
-            File file = new File(UtilsString.pathFileUpload, fileName);
-            multipartFile.transferTo(file);
+            Long size = myFile.getMultipartFile().getSize();
 
             List<SettingEntity> settings = settingRepository.findAll();
             SettingEntity settingNow = null;
@@ -54,10 +51,22 @@ public class FileController {
                 settingNow = settings.get(0);
             }
 
+            if (myFile.getMultipartFile().getSize() >= (size != null ? size.intValue() : 0)) {
+                model.addAttribute("message", "Over size!");
+                return "create-file";
+            }
+
+            MultipartFile multipartFile = myFile.getMultipartFile();
+            String fileName = multipartFile.getOriginalFilename();
+            File file = new File(UtilsString.pathFileUpload, fileName);
+            multipartFile.transferTo(file);
+
             FileEntity fileEntity = fileRepository.findByName(fileName);
+            int version = fileEntity.getVersion();
+
             if (file == null) {
                 fileEntity = new FileEntity();
-                fileEntity.setFileSize(Math.toIntExact(file.getTotalSpace()));
+                fileEntity.setFileSize(size != null ? size.intValue() : 0);
                 fileEntity.setCreatedDateTime(new Date());
                 fileEntity.setName(fileName);
                 fileEntity.setPath(String.format("%s%s", UtilsString.pathFileUpload, fileName));
@@ -67,26 +76,51 @@ public class FileController {
 
                 fileEntity = fileRepository.save(fileEntity);
             } else {
-                FileEntity newFile = new FileEntity();
-                newFile.setFileSize(Math.toIntExact(file.getTotalSpace()));
-                newFile.setCreatedDateTime(new Date());
-                newFile.setName(fileName);
-                newFile.setPath(String.format("%s%s", UtilsString.pathFileUpload, fileName));
-                newFile.setNumberOfDownload(0);
-                newFile.setVersion(fileEntity.getVersion() + 1);
-                newFile.setStatus("Tồn tại");
-                newFile = fileRepository.save(newFile);
-            }
+                fileEntity.setFileSize(size != null ? size.intValue() : 0);
+                fileEntity.setCreatedDateTime(new Date());
+                fileEntity.setName(fileName);
+                fileEntity.setPath(String.format("%s%s", UtilsString.pathFileUpload, fileName));
+                fileEntity.setNumberOfDownload(0);
+                fileEntity.setVersion(version + 1);
+                fileEntity.setStatus("Tồn tại");
+                fileEntity = fileRepository.save(fileEntity);
 
+            }
+            model.addAttribute("ObjectInfo", fileEntity);
+            model.addAttribute("message", "Upload success!");
 
         } catch (Exception e) {
             e.printStackTrace();
-            model.addAttribute("message", "Upload failed");
+            model.addAttribute("message", "Upload failed!");
         }
-        return "/file";
+        return "create-file";
     }
 
 
+    @RequestMapping(value = "/setting/update", method = RequestMethod.POST)
+    public void updateSetting(UpdateSettingRequest setting, Model model) {
+        if (setting == null) {
+            model.addAttribute("message", "param null!!");
+            return;
+        }
+        if (setting.getItemPerPage() == null) {
+            model.addAttribute("message", "ItemPerPage null!!");
+            return;
+        }
+        if (setting.getMaxFileSize() == null || setting.getMaxFileSize() <= 0) {
+            model.addAttribute("message", "Size file invalid!!");
+            return;
+        }
+        if (setting.getMimeType() == null || setting.getMimeType().trim().equals("")) {
+            model.addAttribute("message", "MimeType null!!");
+            return;
+        }
+        try{
+
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
     //    --------------------HELPER---------------------
 
 }

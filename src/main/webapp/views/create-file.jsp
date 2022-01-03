@@ -31,17 +31,21 @@
      style="border: 1px rgb(221, 218, 218) solid; border-radius: 5px; width: 50%; margin: 0 auto; padding: 20px;">
 
     <div class="row">
-        <%--        <div class="col-sm-1" data-toggle="modal" data-target="#myModal">--%>
-        <%--            <button class="btn" ><i class="glyphicon glyphicon-cog"></i></button>--%>
-        <%--        </div>--%>
+        <div class="col-sm-12">
+            <button class="btn" style="float: right;" data-toggle="modal" data-target="#myModal"><i
+                    class="glyphicon glyphicon-cog"></i>
+            </button>
+        </div>
         <div class="col-sm-9">
             <form:form id="formUploadFile" method="POST" action="upload" enctype="multipart/form-data"
                        modelAttribute="myFile">
-                <div class="col-md-5">
-                    <label>Select File</label>
-                    <input type="file" name="multipartFile"/>
+                <div style="margin-bottom:10px;">
+                    <div class="col-md-5">
+                        <label>Select File</label>
+                        <input type="file" name="multipartFile"/>
+                    </div>
+                    <input style="margin-top:20px;" type="submit" value="Submit"/>
                 </div>
-                <input type="submit" value="Submit"/>
             </form:form>
         </div>
     </div>
@@ -108,32 +112,39 @@
 
                 <!-- Modal body -->
                 <div class="modal-body">
-                    <form>
+                    <form:form id="formUpdateSetting" method="POST" action="/setting/update"
+                               modelAttribute="setting">
                         <div class="form-group">
                             <label for="usr">Max file size (MB)</label>
-                            <input type="number" class="form-control" id="usr">
+                            <input type="number" class="form-control" id="usr" name="maxFileSize">
                         </div>
                         <div class="form-group">
                             <label for="pwd">Item per page</label>
-                            <input type="text" class="form-control" id="pwd">
+                            <input type="text" class="form-control" id="pwd" name="itemPerPage">
                         </div>
 
                         <label for="sel1">Allowed upload type</label>
-                        <select class="form-control" id="sel1">
+                        <select class="form-control" id="sel1" name="mimeType">
                             <option>Image</option>
                             <option>Word</option>
                             <option>Excel</option>
                             <option>Pdf</option>
                         </select>
-                    </form>
+                        <br>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-default" style="background-color: green; color: white;"
+                                    data-dismiss="modal">Save
+                            </button>
+                        </div>
+                    </form:form>
                 </div>
 
                 <!-- Modal footer -->
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" style="background-color: green; color: white;"
-                            data-dismiss="modal">Save</button>
-                </div>
-
+                <%--                    <div class="modal-footer">--%>
+                <%--                        <button type="submit" class="btn btn-default" style="background-color: green; color: white;"--%>
+                <%--                                data-dismiss="modal">Save--%>
+                <%--                        </button>--%>
+                <%--                    </div>--%>
             </div>
         </div>
     </div>
