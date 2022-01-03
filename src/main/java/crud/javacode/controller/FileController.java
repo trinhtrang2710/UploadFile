@@ -177,28 +177,36 @@ public class FileController {
     }
 
     @RequestMapping(value = "/setting/update", method = RequestMethod.POST)
-    public void updateSetting(@ModelAttribute("settingg") UpdateSettingRequest setting, Model model, BindingResult result) {
+    public String updateSetting(@ModelAttribute("settingg") UpdateSettingRequest setting, Model model, BindingResult result) {
         if (setting == null) {
             model.addAttribute("message", "param null!!");
-            return;
+            return "redirect: /file";
         }
         if (setting.getItemPerPage() == null) {
             model.addAttribute("message", "ItemPerPage null!!");
-            return;
+            return "redirect: /file";
         }
         if (setting.getMaxFileSize() == null || setting.getMaxFileSize() <= 0) {
             model.addAttribute("message", "Size file invalid!!");
-            return;
+            return "redirect: /file";
         }
         if (setting.getMimeType() == null || setting.getMimeType().trim().equals("")) {
             model.addAttribute("message", "MimeType null!!");
-            return;
+            return "redirect: /file";
         }
-        try{
+        try {
+            SettingEntity settingEntity = new SettingEntity();
+            settingEntity.setItemPerPage(setting.getItemPerPage());
+            settingEntity.setMimeTypeAllowed(setting.getMimeType());
+            settingEntity.setMaxFileSize(setting.getMaxFileSize());
+            settingEntity.setLastUpdatedTime(new Date());
 
-        }catch (Exception e){
-            throw new RuntimeException(e);
+            settingEntity = settingRepository.save(settingEntity);
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return "redirect: /file";
     }
     //    --------------------HELPER---------------------
 
