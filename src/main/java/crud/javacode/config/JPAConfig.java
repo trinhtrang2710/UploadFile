@@ -58,7 +58,6 @@ public class JPAConfig {
 		dataSource.setDriverClassName("com.mysql.jdbc.Driver");
 		dataSource.setUrl("jdbc:mysql://127.0.0.1:3306/demo");
 		dataSource.setUsername("root");
-//		dataSource.setPassword("truongson2K");
 		dataSource.setPassword("Trang@2710");
 
 		return dataSource;
