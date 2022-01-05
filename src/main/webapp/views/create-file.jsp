@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <html>
 
 <head>
@@ -100,8 +102,60 @@
                 </td>
                 </c:forEach>
             </tbody>
-
         </table>
+        <c:if test="${!empty files}">
+            <footer class="footer bg-white b-t">
+                <c:set var="j"
+                       value='<%=request.getParameter("p") == null ? 1 : request
+					.getParameter("p")%>'/>
+
+                <div class="row text-center-xs">
+                    <div class="col-md-4 hidden-sm">
+                        <p class="m-t" style="color: #2e3e4e;">
+                            Tổng số <strong>${total}</strong> dữ liệu
+                        </p>
+                    </div>
+                    <div class="col-md-4 hidden-sm">
+                        <p class="m-t" style="color: #2e3e4e; text-align: center;"></p>
+                    </div>
+                    <div class="col-md-12 col-sm-12 text-right">
+                        <ul class="pagination pagination-sm m-t-sm m-b-none m-r-xs">
+                            <c:choose>
+                                <c:when test="${j == 1}">
+                                    <li class="disabled"><a href="#">&lt;&lt;</a></li>
+                                    <li class="disabled"><a href="#">&lt;</a></li>
+                                </c:when>
+                                <c:otherwise>
+                                    <li><a href="/file?page=1">&lt;&lt;</a></li>
+                                    <li><a href="/file?page=${p-1}">&lt;</a></li>
+                                </c:otherwise>
+                            </c:choose>
+                            <c:forEach var="i" begin="${startPage}" end="${endPage}">
+                                <c:choose>
+                                    <c:when test="${i == j}">
+                                        <li ><a href="/file?page=${i}"><c:out value="${i}" /></a></li>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <li><a href="/file?page=${i}"><c:out
+                                                value="${i}"/></a></li>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:forEach>
+                            <c:choose>
+                                <c:when test="${j == totalPage}">
+                                    <li class="disabled"><a href="#">&gt;</a></li>
+                                    <li class="disabled"><a href="#">&gt;&gt;</a></li>
+                                </c:when>
+                                <c:otherwise>
+                                    <li><a href="/file?page=${p+1}">&gt;</a></li>
+                                    <li><a href="/file?page=${totalPage}">&gt;&gt;</a></li>
+                                </c:otherwise>
+                            </c:choose>
+                        </ul>
+                    </div>
+                </div>
+            </footer>
+        </c:if>
     </div>
 
     <!-- The Modal -->

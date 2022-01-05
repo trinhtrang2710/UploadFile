@@ -7,6 +7,7 @@ import crud.javacode.model.entity.FileEntity;
 import crud.javacode.model.entity.SettingEntity;
 import crud.javacode.repository.FileRepository;
 import crud.javacode.repository.SettingRepository;
+import crud.javacode.service.FileService;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.DefaultMultipartHttpServletRequest;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,7 +30,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping(value = "")
-public class FileController {
+public class FileController extends BaseController {
 
     @Autowired
     private FileRepository fileRepository;
@@ -38,13 +38,20 @@ public class FileController {
     @Autowired
     private SettingRepository settingRepository;
 
+    @Autowired
+    private FileService fileService;
+
     @RequestMapping(value = "/file", method = RequestMethod.GET)
-    public ModelAndView homePage() {
+    public String homePage(@RequestParam("page") Integer page, Model model) {
         List<FileEntity> fileEntity = new ArrayList<>();
-        ModelAndView mav = new ModelAndView("create-file");
-        fileEntity = (fileRepository.findAll());
-        mav.addObject("files", fileEntity);
-        return mav;
+        fileEntity = fileService.page(page);
+        int total = fileService.count();
+        model.addAttribute("files", fileEntity);
+        model.addAttribute("total", total);
+        model.addAttribute("p", page);
+        int totalPage = pageCalculation(total, 10);
+        setPagingProperty(model, page, total, totalPage, 10);
+        return "create-file";
     }
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
@@ -56,7 +63,7 @@ public class FileController {
                     .getFiles("multipartFile");
             if (files == null || files.size() <= 0) {
                 model.addAttribute("message", "File invalid");
-                return "redirect: /file";
+                return "redirect: /file?page=1";
             }
 //            Mảng này chứa những file thêm thành công
             List<FileEntity> fileAddSuccess = new ArrayList<>();
@@ -68,7 +75,7 @@ public class FileController {
 
                     if (size == 0) {
                         model.addAttribute("message", "File invalid");
-                        return "redirect: /file";
+                        return "redirect: /file?page=1";
                     }
 //            tim tat ca setting
                     List<SettingEntity> settings = settingRepository.findAll();
@@ -82,14 +89,14 @@ public class FileController {
                         //                kiem tra dung luong file
                         if ((size.intValue()) > (settingNow.getMaxFileSize() * 1024 * 1024)) {
                             model.addAttribute("message", "Over size!");
-                            return "redirect: /file";
+                            return "redirect: /file?page=1";
                         }
 
 //                Kiem tra kieu file
                         String filenameOrigin = multipartFile.getOriginalFilename();
-                        if (!UtilsString.FileTail.checkFile(settingNow.getMimeTypeAllowed(), filenameOrigin.split(".")[1])) {
+                        if (settingNow.getMimeTypeAllowed() != null && !UtilsString.FileTail.checkFile(settingNow.getMimeTypeAllowed(), filenameOrigin.split(".")[1])) {
                             model.addAttribute("message", "Not same setting");
-                            return "redirect: /file";
+                            return "redirect: /file?page=1";
                         }
                     }
 
@@ -143,18 +150,18 @@ public class FileController {
             e.printStackTrace();
             model.addAttribute("message", "Upload failed!");
         }
-        return "redirect: /file";
+        return "redirect: /file?page=1";
     }
 
     @RequestMapping(value = "/download", method = RequestMethod.GET)
     public String download(@RequestParam("id") Long id, HttpServletResponse response) throws IOException {
         if (id == null) {
-            return "redirect: /file";
+            return "redirect: /file?page=1";
         }
         try {
             FileEntity fileEntity = fileRepository.findById(id);
             if (fileEntity == null) {
-                return "redirect: /file";
+                return "redirect: /file?page=1";
             }
             fileEntity.setNumberOfDownload(fileEntity.getNumberOfDownload() + 1);
             fileRepository.save(fileEntity);
@@ -170,18 +177,18 @@ public class FileController {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return "redirect: /file";
+        return "redirect: /file?page=1";
     }
 
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     public String delete(@RequestParam("id") Long id, HttpServletResponse response) throws IOException {
         if (id == null) {
-            return "redirect: /file";
+            return "redirect: /file?page=1";
         }
         try {
             FileEntity fileEntity = fileRepository.findById(id);
             if (fileEntity == null) {
-                return "redirect: /file";
+                return "redirect: /file?page=1";
             }
 
             File file = new File(fileEntity.getPath());
@@ -191,26 +198,26 @@ public class FileController {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return "redirect: /file";
+        return "redirect: /file?page=1";
     }
 
     @RequestMapping(value = "/setting/update", method = RequestMethod.POST)
     public String updateSetting(@ModelAttribute("settingg") UpdateSettingRequest setting, Model model, BindingResult result) {
         if (setting == null) {
             model.addAttribute("message", "param null!!");
-            return "redirect: /file";
+            return "redirect: /file?page=1";
         }
         if (setting.getItemPerPage() == null) {
             model.addAttribute("message", "ItemPerPage null!!");
-            return "redirect: /file";
+            return "redirect: /file?page=1";
         }
         if (setting.getMaxFileSize() == null || setting.getMaxFileSize() <= 0) {
             model.addAttribute("message", "Size file invalid!!");
-            return "redirect: /file";
+            return "redirect: /file?page=1";
         }
         if (setting.getMimeType() == null || setting.getMimeType().trim().equals("")) {
             model.addAttribute("message", "MimeType null!!");
-            return "redirect: /file";
+            return "redirect: /file?page=1";
         }
         try {
             SettingEntity settingEntity = new SettingEntity();
@@ -224,7 +231,7 @@ public class FileController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "redirect: /file";
+        return "redirect: /file?page=1";
     }
     //    --------------------HELPER---------------------
 
